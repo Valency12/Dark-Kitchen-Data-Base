@@ -1,96 +1,60 @@
-# 🍽 Dark Kitchen - Sistema de Gestión
+# 🍴 Proyecto Dark Kitchen  
 
-## 🎯 Descripción del Proyecto
-Sistema de gestión para un restaurante tipo “Dark Kitchen”, que permite administrar clientes, pedidos, productos, ingredientes, compras y proveedores.  
-Implementa operaciones **CRUD**, procedimientos almacenados, triggers y consultas avanzadas con MySQL, además de conexión desde Java usando JDBC.
+## 📌 Descripción  
+Este proyecto implementa un **sistema de gestión para una Dark Kitchen** utilizando **MySQL** y **Java**.  
+El objetivo es cubrir operaciones de administración de clientes, empleados, productos, inventario, compras, pedidos y auditoría de procesos.  
 
----
+Incluye:  
+- Definición de tablas con **relaciones y llaves foráneas**.  
+- Inserción de datos iniciales para pruebas.  
+- Procedimientos almacenados para reportes, inserción y control de inventario.  
+- Triggers para auditoría y seguimiento automático de clientes.  
+- Consultas avanzadas con **JOIN, UNION, GROUP BY, ORDER BY y HAVING**.  
+- Procedimiento de verificación final para asegurar la correcta creación de la base de datos.  
 
-## 📚 Estructura de la Base de Datos
+## 🗄️ Estructura de la Base de Datos  
+- **Clientes, Empleados, Productos, Ingredientes, Proveedores**  
+- **Pedidos y Compras** con sus respectivos detalles  
+- **Auditoría de Inventario** con control automático mediante triggers  
+- **Seguimiento de Clientes** basado en pedidos realizados  
 
-### Tablas principales
-- **Clientes**: Información de los clientes (nombre, email, dirección).  
-- **Empleados**: Datos de los empleados (nombre, rol).  
-- **Productos**: Productos ofrecidos (nombre, precio, categoría).  
-- **Ingredientes**: Ingredientes y stock.  
-- **Proveedores**: Datos de proveedores.  
-- **Compras** y **Detalle_Compra**: Control de compras de ingredientes.  
-- **Pedidos** y **Detalle_Pedido**: Control de pedidos de clientes.  
-- **Producto_Ingrediente**: Relación entre productos e ingredientes.  
-- **SeguimientoClientes**: Registro de compras para seguimiento.
+> 📷 Aquí puedes agregar capturas de tu diagrama ER y ejemplos de ejecución.
 
----
+## ⚙️ Procedimientos Almacenados  
+- **VentasDiarias** → Reporte detallado de ventas de una fecha específica.  
+- **ClientesPrimerTrimestre** → Análisis de clientes y compras en el primer trimestre de un año.  
+- **AgregarCliente** → Inserción con manejo de excepciones y control de duplicados.  
+- **ActualizarInventario** → Actualiza stock y genera registro en la auditoría de inventario.  
 
-## ⚡ Funcionalidades
+## 🛡️ Triggers  
+- **ControlInventario** → Registra cambios de stock y lanza advertencias si está por debajo del mínimo.  
+- **SeguimientoClientes** → Registra automáticamente cada compra en la tabla de seguimiento.  
 
-### 1. Operaciones CRUD desde Java (JDBC)
-- **Crear**: Insertar nuevos clientes, productos, pedidos.  
-- **Leer**: Consultar clientes, pedidos y productos.  
-- **Actualizar**: Modificar información de clientes, pedidos o inventario.  
-- **Eliminar**: Eliminar registros de clientes, pedidos o productos.
+## 🔎 Consultas Avanzadas  
+El script incluye ejemplos de consultas para:  
+- **JOIN** de múltiples tablas.  
+- **UNION** entre clientes y proveedores.  
+- **GROUP BY** con funciones agregadas.  
+- **Manipulación de fechas** y **filtros con HAVING**.  
 
-### 2. Procedimientos almacenados
-- `VentasDiarias(fecha)` → Devuelve un reporte con todas las ventas de la fecha y total acumulado.  
-- `ClientesPrimerTrimestre()` → Lista los clientes que realizaron pedidos del 1 de enero al 31 de marzo.  
-- `AgregarCliente(...)` → Inserta un cliente y maneja excepción si el correo ya existe.
+## 💻 Código en Java  
+Se incluye un archivo en **Java** para conexión con la base de datos y ejecución de operaciones principales.  
+Este código permite interactuar con el sistema desde una aplicación de consola o interfaz gráfica.  
 
-### 3. Triggers
-- `ControlInventario` → Previene duplicados al insertar un ingrediente.  
-- `SeguimientoClientes` → Registra automáticamente en `SeguimientoClientes` cada vez que un cliente hace un pedido.
+> 📷 Aquí puedes agregar capturas del código ejecutándose.  
 
-### 4. Consultas avanzadas
-- **JOIN** → Unir tablas, p.ej., pedidos con clientes.  
-- **UNION** → Combinar listas de emails de clientes y proveedores.  
-- **ORDER BY** → Ordenar por fecha, hora o total de pedidos.  
-- **GROUP BY** → Agrupar ventas por cliente y calcular totales.  
-- **Manipulación de fechas** → Filtrar pedidos por mes o rango de fechas.
+## 🚀 Ejecución  
+1. Ejecutar el script SQL completo en MySQL Workbench o consola.  
+2. Verificar con el procedimiento `CALL VerificacionFinal();`.  
+3. Compilar y ejecutar el código en Java para conectarse a la base de datos.  
 
----
+## 📂 Archivos del Proyecto  
+- `dark_kitchen.sql` → Script completo con DDL, DML, SP, triggers y consultas.  
+- `Main.java` (u otro nombre que elijas) → Código Java para interacción con la BD.  
 
-## 🛠 Uso del Script SQL
-
-1. Abrir MySQL Workbench o la consola MySQL.  
-2. Copiar y ejecutar el **script completo** `dark_kitchen.sql`.  
-3. Para ejecutar línea por línea:
-   - **CLI:** asegúrate de terminar cada sentencia con `;`.  
-   - **Workbench:** selecciona la línea y presiona **Ctrl + Enter**.  
-4. Para ejecutar todo de una vez: presiona **F5** (Workbench) o ejecuta todo el script en la CLI.
-
----
-
-## 💻 Conexión desde Java (JDBC)
-
-1. Configura tu proyecto en Java con el **conector MySQL JDBC**.  
-2. Ejemplo de conexión:
-
-```java
-String url = "jdbc:mysql://localhost:3306/dark_kitchen";
-String user = "root";
-String pass = "tu_password";
-Connection conn = DriverManager.getConnection(url, user, pass);
-```
-
-3. Operaciones CRUD con `PreparedStatement`:
-   - `INSERT INTO Clientes(...) VALUES(...)`
-   - `SELECT * FROM Clientes`
-   - `UPDATE Clientes SET ... WHERE id_cliente=?`
-   - `DELETE FROM Clientes WHERE id_cliente=?`
+## ✅ Estado del Proyecto  
+El script incluye inserción de datos de prueba y consultas listas para ejecutar.  
+Se recomienda extender la funcionalidad agregando **interfaces gráficas o APIs** que consuman esta base de datos.  
 
 ---
-
-## 📊 Pruebas
-
-- Insertar nuevos clientes y validar restricción de correo único.  
-- Generar reporte de ventas diarias y clientes del primer trimestre.  
-- Insertar pedidos y verificar que el trigger de seguimiento registre correctamente.  
-- Consultas avanzadas para unir, combinar, agrupar y ordenar datos.
-
----
-
-## 📝 Documentación Adicional
-- Diagrama entidad-relación (ER) de la base de datos.  
-- Relación de tablas y llaves primarias/foráneas.  
-- Explicación de triggers y procedimientos almacenados.  
-- Ejemplos de consultas avanzadas.  
-- Ejemplo completo de CRUD desde Java.
-
+✍️ Proyecto académico desarrollado para prácticas avanzadas en **Bases de Datos y Java**.  
