@@ -17,8 +17,8 @@ Incluye:
 - **Pedidos y Compras** con sus respectivos detalles  
 - **Auditoría de Inventario** con control automático mediante triggers  
 - **Seguimiento de Clientes** basado en pedidos realizados  
-
-> 📷 Aquí puedes agregar capturas de tu diagrama ER y ejemplos de ejecución.
+![Dark_kitchen_proyect](https://github.com/user-attachments/assets/36afc1e2-8353-4478-9c26-5cca1de62c08)
+https://app.diagrams.net/#G1XzvHg_xuG9in2XR1RgIyBq0DozPF-agu#%7B%22pageId%22%3A%22aA2aKCnQj_j6rVb8hOUM%22%7D
 
 ## ⚙️ Procedimientos Almacenados  
 - **VentasDiarias** → Reporte detallado de ventas de una fecha específica.  
