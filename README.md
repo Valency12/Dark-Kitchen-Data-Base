@@ -133,6 +133,10 @@ La Dark Kitchen organiza la información principal que maneja el negocio: client
 
 En conjunto, este modelo asegura que se pueda llevar un control completo de las operaciones de la Dark Kitchen, desde la adquisición de ingredientes hasta la entrega final de los pedidos a los clientes.
 
+![Dark_kitchen_proyect](https://github.com/user-attachments/assets/bf1f64a2-15d7-4a36-95c9-86d402ea3ca6)
+
+https://drive.google.com/file/d/1XzvHg_xuG9in2XR1RgIyBq0DozPF-agu/view?usp=sharing
+
 ---
 
 ## 🧩 Entidades (resumen)
@@ -204,15 +208,23 @@ El script incluye ejemplos de consultas para:
 ## 💻 Aplicación Java
 Sistema completo con menú interactivo que incluye **11 opciones de gestión**:
 
-![Menú de la aplicación](https://captura_menu.png)
+<img width="956" height="549" alt="MenuPrincipal" src="https://github.com/user-attachments/assets/517e29d1-6df6-4624-87af-f7b3ce9063ae" />
 
 **Funcionalidades implementadas:**
-- Gestión completa de clientes (CREAR, LEER, ACTUALIZAR).  
-- Reportes de ventas diarias.  
-- Consulta de pedidos por fecha.  
-- Control de inventario con alertas.  
+- Gestión completa de clientes (CREAR, LEER, ACTUALIZAR).
+- <img width="807" height="356" alt="AgregarCliente" src="https://github.com/user-attachments/assets/c49e8bf9-8228-4b99-9d92-4654d9e63278" />
+- Reportes de ventas diarias.
+- <img width="953" height="421" alt="ReporteVentasDiarias4" src="https://github.com/user-attachments/assets/8f9494a9-f787-4339-80bb-984b33a01c8e" />
+- Consulta de pedidos por fecha.
+- <img width="993" height="481" alt="ConsultarPedidosFecha3" src="https://github.com/user-attachments/assets/dce0b594-7d7b-4d11-a2a7-e8b93792f1d5" />
+- Control de inventario.
+- <img width="818" height="366" alt="ActualizarStockIngrediente9" src="https://github.com/user-attachments/assets/f531728e-a9e9-4864-a34c-e1103b23f952" />
+<img width="940" height="330" alt="EliminarProducto6" src="https://github.com/user-attachments/assets/1ac7b850-55f6-45b3-bd71-4d6a5aefa47f" />
+<img width="964" height="395" alt="ActualizarProducto5" src="https://github.com/user-attachments/assets/3bf67df9-e298-4c0b-861c-f1e749ed5988" />
 - Gestión de productos (activar/desactivar).  
-- Análisis de clientes por trimestre.  
+- Análisis de clientes por trimestre.
+- <img width="973" height="432" alt="ConsultarClientes2" src="https://github.com/user-attachments/assets/400176e7-108b-444a-a6c5-c060231c8e04" />
+<img width="1147" height="425" alt="LeerClientesPrimerTrimestre7" src="https://github.com/user-attachments/assets/4438fdce-f428-4a4e-b4ac-3e9796ab7fed" />
 
 ---
 
@@ -306,10 +318,6 @@ dark-kitchen-project/
 
 ## 📊 Capturas de Funcionamiento
 **Base de Datos**  
-![Captura SQL](https://captura_sql.png)  
-
-**Aplicación Java**  
-![Captura Java](https://captura_java.png)  
 
 ---
 
