@@ -318,6 +318,33 @@ dark-kitchen-project/
 
 ## 📊 Capturas de Funcionamiento
 **Base de Datos**  
+- Creacion de Tablas
+<img width="909" height="613" alt="crearTablas" src="https://github.com/user-attachments/assets/05b7add6-b8b1-4250-9244-93045d0a6f29" />
+<img width="887" height="416" alt="tablaClientes" src="https://github.com/user-attachments/assets/5029ae83-cc78-4ecd-9969-efc7e0523026" />
+<img width="823" height="408" alt="tablaCompras" src="https://github.com/user-attachments/assets/b1f248bb-5dbb-4d06-ada2-3405e4898076" />
+<img width="835" height="402" alt="tablaDetalleCompras" src="https://github.com/user-attachments/assets/dd133301-e4b5-4f6b-baef-ecf18f120144" />
+<img width="906" height="421" alt="tablaDetallePedido" src="https://github.com/user-attachments/assets/ec8c8fba-e403-438c-9cbd-ceaf18ceabb8" />
+<img width="802" height="396" alt="tablaProductoIngrediente" src="https://github.com/user-attachments/assets/e0b61cb6-9db5-42e8-b37b-55609d4266f7" />
+<img width="891" height="423" alt="tablaPedidos" src="https://github.com/user-attachments/assets/6ce7658e-0db8-48ca-a55e-d49d917f9890" />
+<img width="896" height="422" alt="tablaIngredientes" src="https://github.com/user-attachments/assets/2b9ddd49-c017-4e76-ad9e-b05eddaaaa03" />
+<img width="838" height="418" alt="tablaEmpleados" src="https://github.com/user-attachments/assets/ec6b0534-8f30-4f63-a5fd-06548610e861" />
+<img width="872" height="395" alt="tablaProveedores" src="https://github.com/user-attachments/assets/ad319a00-9289-4cc5-9c04-c579a6a12e6b" />
+<img width="768" height="393" alt="tablaProductos" src="https://github.com/user-attachments/assets/3570fee5-52b3-4d41-936b-0f21aed8a1d3" />
+- Creacion de usuarios
+<img width="804" height="394" alt="crearUsuario" src="https://github.com/user-attachments/assets/713173ed-05a0-4aa4-b5be-731d71b3f653" />
+- Procedimientos
+<img width="839" height="612" alt="procedimientos" src="https://github.com/user-attachments/assets/18bd59ba-7ccd-4ae4-bdd6-52b3925a0c3c" />
+- Consultas
+<img width="893" height="606" alt="consultas" src="https://github.com/user-attachments/assets/dc0a6f3b-b41a-42d7-8427-ccc9be01c459" />
+<img width="883" height="433" alt="consultas2" src="https://github.com/user-attachments/assets/64523ab0-b6c9-46fd-b9b9-803e889b3999" />
+<img width="862" height="429" alt="consultas3" src="https://github.com/user-attachments/assets/9e36e3d0-c1a9-4ebb-a626-430493136f21" />
+<img width="795" height="441" alt="consultas4" src="https://github.com/user-attachments/assets/78c4d5a8-185d-4f48-a676-8916e541feea" />
+<img width="903" height="399" alt="consultas5" src="https://github.com/user-attachments/assets/192944e0-4900-455a-91f6-86d926996a85" />
+<img width="883" height="403" alt="consultas6" src="https://github.com/user-attachments/assets/3dcd5de6-b650-423d-995b-14780322f3dc" />
+- Crud 
+<img width="885" height="260" alt="crud" src="https://github.com/user-attachments/assets/9db77ca1-dc68-4d50-be02-e7bdb43e1f0c" />
+- Verificacion
+<img width="908" height="325" alt="verificacion" src="https://github.com/user-attachments/assets/a5b64887-51e9-4452-a650-bc0e15efd44b" />
 
 ---
 
