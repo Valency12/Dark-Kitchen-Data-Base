@@ -1,15 +1,37 @@
 import java.sql.*;
 import java.util.Scanner;
 
+/**
+ * Sistema de gestión para Dark Kitchen - Aplicación principal
+ *
+ * <p>Esta aplicación proporciona una interfaz de consola para gestionar
+ * clientes, productos, pedidos e inventario de un dark kitchen.</p>
+ *
+ * @author Tu Nombre
+ * @version 1.0
+ * @since 2024
+ */
 public class DarkKitchenApp {
-    // CONFIGURACIÓN PARA MySQL 9.4.0 + Windows 11
+    /** URL de conexión a la base de datos MySQL */
     private static final String URL = "jdbc:mysql://localhost:3306/dark_kitchen?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
-    private static final String USER = "root";  // ⬅️ CAMBIA POR TU USUARIO
-    private static final String PASSWORD = "root";  // ⬅️ CAMBIA POR TU PASSWORD
 
+    /** Usuario de la base de datos */
+    private static final String USER = "root";
+
+    /** Contraseña de la base de datos */
+    private static final String PASSWORD = "Valencia123";
+
+    /** Conexión a la base de datos */
     private static Connection connection;
+
+    /** Scanner para entrada de usuario */
     private static Scanner scanner = new Scanner(System.in);
 
+    /**
+     * Método principal que inicia la aplicación
+     *
+     * @param args Argumentos de línea de comandos (no utilizados)
+     */
     public static void main(String[] args) {
         try {
             System.out.println("🚀 Iniciando Dark Kitchen App...");
@@ -28,17 +50,23 @@ public class DarkKitchenApp {
             System.out.println("   - MySQL esté ejecutándose");
             System.out.println("   - Usuario y password sean correctos");
             System.out.println("   - La base de datos 'dark_kitchen' exista");
-            e.printStackTrace();
         } finally {
             cerrarConexion();
         }
     }
 
+    /**
+     * Establece conexión con la base de datos MySQL
+     *
+     * @throws SQLException Si ocurre un error al conectar
+     */
     private static void conectarBD() throws SQLException {
-        // Conexión optimizada para MySQL 9.4.0
         connection = DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
+    /**
+     * Cierra la conexión con la base de datos de forma segura
+     */
     private static void cerrarConexion() {
         try {
             if (connection != null && !connection.isClosed()) {
@@ -50,10 +78,11 @@ public class DarkKitchenApp {
         }
     }
 
-    // ========================================
-    // MENÚ PRINCIPAL
-    // ========================================
-
+    /**
+     * Muestra el menú principal y gestiona las opciones del usuario
+     *
+     * @throws SQLException Si ocurre un error en la base de datos
+     */
     private static void menuPrincipal() throws SQLException {
         int opcion;
 
@@ -69,12 +98,14 @@ public class DarkKitchenApp {
             System.out.println("7. LEER - Clientes del primer trimestre");
             System.out.println("8. LEER - Consultar inventario");
             System.out.println("9. ACTUALIZAR - Actualizar stock ingrediente");
+            System.out.println("10. LEER - Ver todos los productos");
+            System.out.println("11. ACTUALIZAR - Reactivar producto");
             System.out.println("0. Salir del sistema");
             System.out.println("=" .repeat(45));
             System.out.print("Seleccione una opción: ");
 
             opcion = scanner.nextInt();
-            scanner.nextLine(); // Limpiar buffer
+            scanner.nextLine();
 
             switch (opcion) {
                 case 1 -> crearCliente();
@@ -86,6 +117,8 @@ public class DarkKitchenApp {
                 case 7 -> clientesPrimerTrimestre();
                 case 8 -> consultarInventario();
                 case 9 -> actualizarStockIngrediente();
+                case 10 -> verTodosLosProductos();
+                case 11 -> reactivarProducto();
                 case 0 -> System.out.println("👋 ¡Gracias por usar Dark Kitchen!");
                 default -> System.out.println("❌ Opción inválida, intente nuevamente");
             }
@@ -93,10 +126,9 @@ public class DarkKitchenApp {
         } while (opcion != 0);
     }
 
-    // ========================================
-    // OPERACIONES CRUD - CREATE (CREAR)
-    // ========================================
-
+    /**
+     * Crea un nuevo cliente en el sistema
+     */
     private static void crearCliente() {
         try {
             System.out.println("\n➕ AGREGAR NUEVO CLIENTE");
@@ -112,7 +144,6 @@ public class DarkKitchenApp {
             System.out.print("Dirección: ");
             String direccion = scanner.nextLine();
 
-            // Llamar al procedimiento almacenado
             String sql = "CALL AgregarCliente(?, ?, ?, ?, ?)";
             CallableStatement stmt = connection.prepareCall(sql);
 
@@ -134,10 +165,9 @@ public class DarkKitchenApp {
         }
     }
 
-    // ========================================
-    // OPERACIONES CRUD - READ (LEER)
-    // ========================================
-
+    /**
+     * Muestra todos los clientes registrados en el sistema
+     */
     private static void leerClientes() {
         try {
             System.out.println("\n👥 LISTA DE CLIENTES REGISTRADOS");
@@ -147,8 +177,7 @@ public class DarkKitchenApp {
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
 
-            System.out.printf("%-5s %-20s %-30s %-15s%n",
-                    "ID", "Nombre", "Email", "Teléfono");
+            System.out.printf("%-5s %-20s %-30s %-15s%n", "ID", "Nombre", "Email", "Teléfono");
             System.out.println("-".repeat(70));
 
             int contador = 0;
@@ -159,8 +188,7 @@ public class DarkKitchenApp {
                 String email = rs.getString("email");
                 String telefono = rs.getString("telefono");
 
-                System.out.printf("%-5d %-20s %-30s %-15s%n",
-                        id, nombre, email, telefono);
+                System.out.printf("%-5d %-20s %-30s %-15s%n", id, nombre, email, telefono);
             }
 
             System.out.println("-".repeat(70));
@@ -174,6 +202,9 @@ public class DarkKitchenApp {
         }
     }
 
+    /**
+     * Consulta pedidos por una fecha específica
+     */
     private static void leerPedidosPorFecha() {
         try {
             System.out.println("\n📋 CONSULTAR PEDIDOS POR FECHA");
@@ -188,8 +219,7 @@ public class DarkKitchenApp {
             stmt.setString(1, fecha);
             ResultSet rs = stmt.executeQuery();
 
-            System.out.printf("%-8s %-20s %-10s %-15s %-12s%n",
-                    "Pedido", "Cliente", "Total", "Estado", "Hora");
+            System.out.printf("%-8s %-20s %-10s %-15s %-12s%n", "Pedido", "Cliente", "Total", "Estado", "Hora");
             System.out.println("-".repeat(75));
 
             int contador = 0;
@@ -201,8 +231,7 @@ public class DarkKitchenApp {
                 String estado = rs.getString("estado");
                 String hora = rs.getString("hora_pedido");
 
-                System.out.printf("%-8d %-20s $%-9.2f %-15s %-12s%n",
-                        idPedido, cliente, total, estado, hora);
+                System.out.printf("%-8d %-20s $%-9.2f %-15s %-12s%n", idPedido, cliente, total, estado, hora);
             }
 
             System.out.println("-".repeat(75));
@@ -220,13 +249,15 @@ public class DarkKitchenApp {
         }
     }
 
+    /**
+     * Genera reporte de ventas para una fecha específica
+     */
     private static void reporteVentasDiarias() {
         try {
             System.out.println("\n💰 REPORTE DE VENTAS DIARIAS");
             System.out.print("Ingrese la fecha (YYYY-MM-DD): ");
             String fecha = scanner.nextLine();
 
-            // Llamar al procedimiento almacenado
             String sql = "CALL VentasDiarias(?)";
             CallableStatement stmt = connection.prepareCall(sql);
             stmt.setString(1, fecha);
@@ -234,12 +265,10 @@ public class DarkKitchenApp {
             boolean tieneResultados = stmt.execute();
 
             if (tieneResultados) {
-                // Primer resultado: detalle de ventas
                 System.out.println("\n📊 DETALLE DE VENTAS:");
                 ResultSet rs = stmt.getResultSet();
 
-                System.out.printf("%-8s %-20s %-12s %-10s %-15s%n",
-                        "Pedido", "Cliente", "Fecha", "Total", "Estado");
+                System.out.printf("%-8s %-20s %-12s %-10s %-15s%n", "Pedido", "Cliente", "Fecha", "Total", "Estado");
                 System.out.println("-".repeat(75));
 
                 int contador = 0;
@@ -251,12 +280,10 @@ public class DarkKitchenApp {
                     double total = rs.getDouble("total");
                     String estado = rs.getString("estado");
 
-                    System.out.printf("%-8d %-20s %-12s $%-9.2f %-15s%n",
-                            idPedido, cliente, fechaPedido, total, estado);
+                    System.out.printf("%-8d %-20s %-12s $%-9.2f %-15s%n", idPedido, cliente, fechaPedido, total, estado);
                 }
                 rs.close();
 
-                // Segundo resultado: totales
                 if (stmt.getMoreResults()) {
                     rs = stmt.getResultSet();
                     if (rs.next()) {
@@ -282,6 +309,9 @@ public class DarkKitchenApp {
         }
     }
 
+    /**
+     * Consulta clientes activos en el primer trimestre de un año
+     */
     private static void clientesPrimerTrimestre() {
         try {
             System.out.println("\n📅 CLIENTES DEL PRIMER TRIMESTRE");
@@ -328,6 +358,9 @@ public class DarkKitchenApp {
         }
     }
 
+    /**
+     * Consulta el estado actual del inventario
+     */
     private static void consultarInventario() {
         try {
             System.out.println("\n📦 INVENTARIO DE INGREDIENTES");
@@ -373,10 +406,9 @@ public class DarkKitchenApp {
         }
     }
 
-    // ========================================
-    // OPERACIONES CRUD - UPDATE (ACTUALIZAR)
-    // ========================================
-
+    /**
+     * Actualiza el precio de un producto
+     */
     private static void actualizarProducto() {
         try {
             System.out.println("\n✏️ ACTUALIZAR PRECIO DE PRODUCTO");
@@ -408,6 +440,9 @@ public class DarkKitchenApp {
         }
     }
 
+    /**
+     * Actualiza el stock de un ingrediente
+     */
     private static void actualizarStockIngrediente() {
         try {
             System.out.println("\n📊 ACTUALIZAR STOCK DE INGREDIENTE");
@@ -436,10 +471,9 @@ public class DarkKitchenApp {
         }
     }
 
-    // ========================================
-    // OPERACIONES CRUD - DELETE (ELIMINAR)
-    // ========================================
-
+    /**
+     * Desactiva un producto (eliminación lógica)
+     */
     private static void eliminarProducto() {
         try {
             System.out.println("\n🗑️ ELIMINAR (DESACTIVAR) PRODUCTO");
@@ -447,7 +481,6 @@ public class DarkKitchenApp {
             int id = scanner.nextInt();
             scanner.nextLine();
 
-            // Confirmación de seguridad
             System.out.print("¿Está seguro de eliminar el producto? (s/n): ");
             String confirmacion = scanner.nextLine();
 
@@ -472,6 +505,78 @@ public class DarkKitchenApp {
 
         } catch (SQLException e) {
             System.err.println("❌ Error al eliminar producto: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Muestra todos los productos incluyendo estado activo/inactivo
+     */
+    private static void verTodosLosProductos() {
+        try {
+            System.out.println("\n📦 LISTA COMPLETA DE PRODUCTOS");
+            System.out.println("-".repeat(80));
+
+            String sql = "SELECT id_producto, nombre_producto, precio, categoria, activo " +
+                    "FROM Productos ORDER BY activo DESC, id_producto";
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            System.out.printf("%-5s %-25s %-10s %-15s %-10s%n",
+                    "ID", "Producto", "Precio", "Categoría", "Estado");
+            System.out.println("-".repeat(80));
+
+            int activos = 0, inactivos = 0;
+            while (rs.next()) {
+                int id = rs.getInt("id_producto");
+                String nombre = rs.getString("nombre_producto");
+                double precio = rs.getDouble("precio");
+                String categoria = rs.getString("categoria");
+                boolean activo = rs.getBoolean("activo");
+
+                String estado = activo ? "✅ ACTIVO" : "❌ INACTIVO";
+                if (activo) activos++; else inactivos++;
+
+                System.out.printf("%-5d %-25s $%-9.2f %-15s %-10s%n",
+                        id, nombre, precio, categoria, estado);
+            }
+
+            System.out.println("-".repeat(80));
+            System.out.println("📊 Resumen: " + activos + " activos, " + inactivos + " inactivos");
+
+            rs.close();
+            stmt.close();
+
+        } catch (SQLException e) {
+            System.err.println("❌ Error al consultar productos: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Reactiva un producto previamente desactivado
+     */
+    private static void reactivarProducto() {
+        try {
+            System.out.println("\n🔄 REACTIVAR PRODUCTO");
+            System.out.print("ID del producto a reactivar: ");
+            int id = scanner.nextInt();
+            scanner.nextLine();
+
+            String sql = "UPDATE Productos SET activo = TRUE WHERE id_producto = ?";
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setInt(1, id);
+
+            int filasAfectadas = stmt.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                System.out.println("✅ Producto reactivado exitosamente");
+            } else {
+                System.out.println("❌ No se encontró el producto con ID: " + id);
+            }
+
+            stmt.close();
+
+        } catch (SQLException e) {
+            System.err.println("❌ Error al reactivar producto: " + e.getMessage());
         }
     }
 }

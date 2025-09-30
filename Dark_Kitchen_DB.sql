@@ -1,7 +1,7 @@
 DROP DATABASE IF EXISTS dark_kitchen;
 CREATE DATABASE dark_kitchen;
 USE dark_kitchen;
-SHOW TABLES; 
+
 CREATE TABLE Clientes (
     id_cliente INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
@@ -105,7 +105,6 @@ CREATE TABLE SeguimientoClientes (
     FOREIGN KEY (id_cliente) REFERENCES Clientes(id_cliente)
 );
 
--- TABLA CORREGIDA (ÚNICO CAMBIO REAL NECESARIO)
 CREATE TABLE AuditoriaInventario (
     id_auditoria INT AUTO_INCREMENT PRIMARY KEY,
     id_ingrediente INT,
@@ -113,13 +112,17 @@ CREATE TABLE AuditoriaInventario (
     stock_anterior DECIMAL(10,2),
     stock_nuevo DECIMAL(10,2),
     fecha_cambio DATETIME DEFAULT CURRENT_TIMESTAMP,
-    usuario VARCHAR(100) -- CORREGIDO: USER() → CURRENT_USER
+    usuario VARCHAR(100)
 );
 
--- ========================================
--- INSERCIÓN DE DATOS (DML) - COMPLETO
--- ========================================
+-- Crear usuarios y permisos
+CREATE USER IF NOT EXISTS 'dark_kitchen_admin'@'localhost' IDENTIFIED BY 'admin123';
+GRANT ALL PRIVILEGES ON dark_kitchen.* TO 'dark_kitchen_admin'@'localhost';
 
+CREATE USER IF NOT EXISTS 'dark_kitchen_user'@'localhost' IDENTIFIED BY 'user123';
+GRANT SELECT, INSERT, UPDATE, EXECUTE ON dark_kitchen.* TO 'dark_kitchen_user'@'localhost';
+
+-- Inserción de datos
 INSERT INTO Clientes (nombre, apellido, telefono, email, direccion) VALUES
 ('Ana', 'López', '5511111111', 'ana@example.com', 'Calle A #123, CDMX'),
 ('Carlos', 'Ramírez', '5522222222', 'carlos@example.com', 'Av. Reforma #456, CDMX'),
@@ -177,9 +180,9 @@ INSERT INTO Detalle_Compra (id_compra, id_ingrediente, cantidad_comprada, precio
 (5, 5, 5, 190.00);
 
 INSERT INTO Pedidos (id_cliente, fecha_pedido, hora_pedido, estado, total, metodo_pago) VALUES
-(1, '2025-08-10', '12:30:00', 'pendiente', 215.00, 'tarjeta'),
-(2, '2025-08-10', '13:00:00', 'en preparación', 120.00, 'efectivo'),
-(3, '2025-08-11', '14:15:00', 'enviado', 155.00, 'transferencia'),
+(1, '2025-01-10', '12:30:00', 'pendiente', 215.00, 'tarjeta'),
+(2, '2025-02-10', '13:00:00', 'en preparación', 120.00, 'efectivo'),
+(3, '2025-01-11', '14:15:00', 'enviado', 155.00, 'transferencia'),
 (4, '2025-08-11', '15:00:00', 'entregado', 25.00, 'efectivo'),
 (5, '2025-08-12', '16:30:00', 'pendiente', 60.00, 'tarjeta');
 
@@ -190,16 +193,11 @@ INSERT INTO Detalle_Pedido (id_pedido, id_producto, cantidad, subtotal) VALUES
 (3, 2, 1, 95.00),
 (3, 3, 1, 60.00);
 
--- ========================================
--- PROCEDIMIENTOS ALMACENADOS (COMPLETOS - COMO ORIGINAL)
--- ========================================
-
+-- Procedimientos almacenados
 DELIMITER //
 
--- Procedimiento para ventas diarias (COMPLETO)
 CREATE PROCEDURE VentasDiarias(IN p_fecha DATE)
 BEGIN
-    -- Reporte detallado de ventas
     SELECT 
         p.id_pedido, 
         CONCAT(c.nombre, ' ', c.apellido) AS cliente,
@@ -213,7 +211,6 @@ BEGIN
     WHERE p.fecha_pedido = p_fecha
     ORDER BY p.hora_pedido DESC;
 
-    -- Total de ventas del día
     SELECT 
         COUNT(*) AS total_pedidos,
         SUM(total) AS total_ventas,
@@ -222,7 +219,6 @@ BEGIN
     WHERE fecha_pedido = p_fecha;
 END //
 
--- Procedimiento para clientes del primer trimestre (COMPLETO)
 CREATE PROCEDURE ClientesPrimerTrimestre(IN p_year INT)
 BEGIN
     SELECT 
@@ -239,7 +235,6 @@ BEGIN
     ORDER BY monto_total DESC;
 END //
 
--- Procedimiento con manejo de excepción única (COMPLETO)
 CREATE PROCEDURE AgregarCliente(
     IN p_nombre VARCHAR(50),
     IN p_apellido VARCHAR(50),
@@ -248,7 +243,7 @@ CREATE PROCEDURE AgregarCliente(
     IN p_direccion VARCHAR(150)
 )
 BEGIN
-    DECLARE EXIT HANDLER FOR 1062 -- Código de error para duplicados
+    DECLARE EXIT HANDLER FOR 1062
     BEGIN
         ROLLBACK;
         SELECT 'Error: Ya existe un cliente con ese correo electrónico' AS mensaje_error;
@@ -270,7 +265,6 @@ BEGIN
     SELECT 'Cliente agregado exitosamente' AS mensaje_exito;
 END //
 
--- Procedimiento para actualizar inventario con TCL (COMPLETO)
 CREATE PROCEDURE ActualizarInventario(
     IN p_id_ingrediente INT,
     IN p_cantidad DECIMAL(10,2)
@@ -300,32 +294,46 @@ BEGIN
     SELECT 'Inventario actualizado exitosamente' AS mensaje_exito;
 END //
 
-DELIMITER ;
+CREATE PROCEDURE ProcesarPedidoConRollback(IN p_id_pedido INT)
+BEGIN
+    DECLARE v_stock_actual DECIMAL(10,2);
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SELECT 'Error: Transacción revertida' AS resultado;
+    END;
+    
+    START TRANSACTION;
+    
+    SELECT stock INTO v_stock_actual FROM Ingredientes WHERE id_ingrediente = 1;
+    
+    IF v_stock_actual > 0 THEN
+        UPDATE Ingredientes SET stock = stock - 0.1 WHERE id_ingrediente = 1;
+        UPDATE Pedidos SET estado = 'en preparación' WHERE id_pedido = p_id_pedido;
+        COMMIT;
+        SELECT 'Pedido procesado exitosamente' AS resultado;
+    ELSE
+        ROLLBACK;
+        SELECT 'Error: Stock insuficiente' AS resultado;
+    END IF;
+END //
 
--- ========================================
--- TRIGGERS (COMPLETOS)
--- ========================================
-
-DELIMITER //
-
--- Trigger mejorado para control de inventario (COMPLETO)
+-- Triggers
 CREATE TRIGGER ControlInventario BEFORE UPDATE ON Ingredientes
 FOR EACH ROW
 BEGIN
-    -- Registrar auditoría de cambios
     IF OLD.stock != NEW.stock THEN
         INSERT INTO AuditoriaInventario (id_ingrediente, nombre_ingrediente, stock_anterior, stock_nuevo)
         VALUES (OLD.id_ingrediente, OLD.nombre_ingrediente, OLD.stock, NEW.stock);
     END IF;
     
-    -- Verificar stock mínimo
     IF NEW.stock < NEW.stock_minimo THEN
         SIGNAL SQLSTATE '45000' 
         SET MESSAGE_TEXT = 'Advertencia: Stock por debajo del mínimo permitido';
     END IF;
 END //
 
--- Trigger para seguimiento de clientes (COMPLETO)
 CREATE TRIGGER SeguimientoClientes AFTER INSERT ON Pedidos
 FOR EACH ROW
 BEGIN
@@ -342,11 +350,7 @@ END //
 
 DELIMITER ;
 
--- ========================================
--- CONSULTAS AVANZADAS (COMPLETAS)
--- ========================================
-
--- JOIN con múltiples tablas
+-- Consultas avanzadas
 SELECT 
     p.id_pedido,
     CONCAT(c.nombre, ' ', c.apellido) AS cliente,
@@ -361,20 +365,17 @@ JOIN Detalle_Pedido dp ON p.id_pedido = dp.id_pedido
 JOIN Productos pr ON dp.id_producto = pr.id_producto
 ORDER BY p.fecha_pedido DESC, p.total DESC;
 
--- UNION de clientes y proveedores
 SELECT 'Cliente' AS tipo, nombre, apellido, email, telefono FROM Clientes
 UNION ALL
 SELECT 'Proveedor' AS tipo, nombre_proveedor AS nombre, '' AS apellido, email, telefono FROM Proveedores
 ORDER BY tipo, nombre;
 
--- ORDER BY múltiple
 SELECT * FROM Pedidos 
-ORDER BY fecha_pedido DESC, hora_pedido DESC; -- Más reciente primero
+ORDER BY fecha_pedido DESC, hora_pedido DESC;
 
 SELECT * FROM Productos 
-ORDER BY precio ASC; -- Más barato primero
+ORDER BY precio ASC;
 
--- GROUP BY con funciones agregadas
 SELECT 
     categoria,
     COUNT(*) AS total_productos,
@@ -384,7 +385,6 @@ SELECT
 FROM Productos 
 GROUP BY categoria;
 
--- Manipulación de fechas
 SELECT 
     id_pedido,
     fecha_pedido,
@@ -395,7 +395,6 @@ SELECT
 FROM Pedidos
 WHERE YEAR(fecha_pedido) = 2025 AND MONTH(fecha_pedido) = 8;
 
--- Consulta con HAVING
 SELECT 
     id_cliente,
     COUNT(*) AS total_pedidos,
@@ -404,30 +403,34 @@ FROM Pedidos
 GROUP BY id_cliente
 HAVING total_pedidos > 1 AND monto_total > 100;
 
--- Consulta final de verificación
-SELECT 'Script COMPLETO ejecutado correctamente' AS resultado;
-
-
-
--- ========================================
--- VERIFICACIÓN AUTOMÁTICA
--- ========================================
-
+-- Procedimiento de verificación
 DELIMITER //
 
 CREATE PROCEDURE VerificacionFinal()
 BEGIN
-    -- Tu script de verificación aquí
     SELECT 'Base de datos dark_kitchen creada exitosamente' AS resultado;
     
-    -- Mostrar resumen
     SELECT 
         (SELECT COUNT(*) FROM Clientes) AS total_clientes,
         (SELECT COUNT(*) FROM Productos) AS total_productos,
         (SELECT COUNT(*) FROM Pedidos) AS total_pedidos,
-        (SELECT COUNT(*) FROM information_schema.routines WHERE routine_schema = 'dark_kitchen') AS total_procedimientos;
+        (SELECT COUNT(*) FROM information_schema.routines 
+         WHERE routine_schema = 'dark_kitchen') AS total_procedimientos;
 END //
 
 DELIMITER ;
 
+-- Operaciones CRUD de demostración
+INSERT INTO Clientes (nombre, apellido, telefono, email, direccion) 
+VALUES ('Test', 'CRUD', '5566666666', 'test_crud@example.com', 'Dirección CRUD');
+
+SELECT * FROM Clientes WHERE email = 'test_crud@example.com';
+
+UPDATE Clientes SET telefono = '5577777777' WHERE email = 'test_crud@example.com';
+
+DELETE FROM Clientes WHERE email = 'test_crud@example.com';
+
+-- Verificación final
 CALL VerificacionFinal();
+
+SELECT 'Script ejecutado correctamente' AS resultado;
